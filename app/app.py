@@ -34,9 +34,17 @@ descriptions = {
     "trash": "Non-recyclable waste"
 }
 
-# Load model
+# Load model (with auto-download)
+import gdown
+
+MODEL_PATH = "best_model.pth"
+
+if not os.path.exists(MODEL_PATH):
+    url = "https://drive.google.com/uc?id=1edbiRNohL9rggZt6aWNyMUobueMIk6pZ"
+    gdown.download(url, MODEL_PATH, quiet=False)
+
 model = get_model(len(classes))
-model.load_state_dict(torch.load("models/best_model.pth", map_location=device))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 model.to(device)
 model.eval()
 
