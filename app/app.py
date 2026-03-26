@@ -34,19 +34,24 @@ descriptions = {
     "trash": "Non-recyclable waste"
 }
 
-# Load model (with auto-download)
-import gdown
+@st.cache_resource
+def load_model():
+    import gdown
+    
+    MODEL_PATH = "best_model.pth"
 
-MODEL_PATH = "best_model.pth"
+    if not os.path.exists(MODEL_PATH):
+        url = "https://drive.google.com/uc?id=1edbiRNohL9rggZt6aWNyMUobueMIk6pZ"
+        gdown.download(url, MODEL_PATH, quiet=False)
 
-if not os.path.exists(MODEL_PATH):
-    url = "https://drive.google.com/uc?id=1edbiRNohL9rggZt6aWNyMUobueMIk6pZ"
-    gdown.download(url, MODEL_PATH, quiet=False)
+    model = get_model(len(classes))
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    model.to(device)
+    model.eval()
+    
+    return model
 
-model = get_model(len(classes))
-model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
-model.to(device)
-model.eval()
+model = load_model()
 
 # Transform
 transform = transforms.Compose([
